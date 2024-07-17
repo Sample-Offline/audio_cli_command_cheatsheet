@@ -1,26 +1,26 @@
-########
-SOX
-########
+---------------------------------------------------------------------------------
+###################
+### sox Audio Stats
+###################
 
-1. audio stats
+# 1. audio stats
+# Length                length of the audio file in seconds
+# Scaled                by what the input is scaled by. By default 2^31-1, to go from 32-bit signed integer to [-1, 1]
+# Maximum amplitude     maximum sample value
+# Minimum amplitude     minimum sample value
+# Midline amplitude     aka mid-range, midpoint between the max and minimum values.
+# Mean norm             arithmetic mean of samples' absolute values
+# Mean amplitude        arithmetic mean of samples' values
+# RMS amplitude         root mean square, root of squared values' mean
+# Maximum delta         maximum difference between two successive samples
+# Minimum delta         minimum difference between two successive samples
+# Mean delta            arithmetic mean of differences between successive samples
+# RMS delta             root mean square of differences between successive samples
+# Rough frequency       estimation of the input file's frequency, in hertz. unsure of method used
+# Volume adjustment     value that should be sent to -v so peak absolute amplitude is 1
 sox example.wav -n stat
 
-Length                length of the audio file in seconds
-Scaled                by what the input is scaled by. By default 2^31-1, to go from 32-bit signed integer to [-1, 1]
-Maximum amplitude     maximum sample value
-Minimum amplitude     minimum sample value
-Midline amplitude     aka mid-range, midpoint between the max and minimum values.
-Mean norm             arithmetic mean of samples' absolute values
-Mean amplitude        arithmetic mean of samples' values
-RMS amplitude         root mean square, root of squared values' mean
-Maximum delta         maximum difference between two successive samples
-Minimum delta         minimum difference between two successive samples
-Mean delta            arithmetic mean of differences between successive samples
-RMS delta             root mean square of differences between successive samples
-Rough frequency       estimation of the input file's frequency, in hertz. unsure of method used
-Volume adjustment     value that should be sent to -v so peak absolute amplitude is 1
-
-2. Sample rate and stuff
+# 2. Sample rate and stuff
 sox --i example.wav
 
 
@@ -33,64 +33,65 @@ gzip -cd MySong.als > MySong.xml
 
 ---------------------------------------------------------------------------------
 ###################
-### Convert file via ffmpeg
-###################
-The following command keeps high quality on .mp3 (320 kbps), and metadata from 
-.flac file are converted to ID3v2 format, which can be included in .mp3 files:
-
-ffmpeg -i input.flac -ab 320k -map_metadata 0 -id3v2_version 3 output.mp3
-
-And convert wav to .flac 
-ffmpeg -i input.wav -map_metadata 0 -id3v2_version 3 output.flac
-
-
----------------------------------------------------------------------------------
-###################
-### Will find all directories containing a filetype
+### Find
 ###################
 
-```
+# Will find all directories containing a filetype
 find / -type f -name '*.wav' -o -name '*.mp3' -o -name '*.aif' -o -name '*.ogg' -o -name '*.flac' -o -name '*.m4a' -o -name '*.pcm'    | sed -E 's|/[^/]+$||' |sort -u
-```
 
-Also Ableton proj files
-
-##### Locations
-
-- /Volumes/Bodlein
-- /Volumes/Bodlein 1
-- /Volumes/Wren
-- /Volumes/Music USB
-
-```
+# Find Ableton-specific file types: .adg, .alp, .als
+# Locations
+# - /Volumes/Bodlein
+# - /Volumes/Bodlein 1
+# - /Volumes/Wren
+# - /Volumes/Music USB
 find / -type f -name '*.adg' -o -name '*.alp' -o -name '*.als' | sed -E 's|/[^/]+$||' |sort -u
-```
-
-
----------------------------------------------------------------------------------
 
 ###################
-#### youtube-dl audio only
+### mdfind
 ###################
-
-youtube-dl
-youtube-dl <url> --extract-audio --audio-quality 0 131 --audio-format "wav"
-
-##### Youtube-dl only audio
-youtube-dl -x --audio-format="mp3" https://www.youtube.com/watch\?v\=VFK8_9RcaOc
+# mdfind can be used to quickly search for a file type
+mdfind -image
+mdfind -audio
 
 
 ---------------------------------------------------------------------------------
 ###################
-### Unwrap/convert files from format to format
+### afconvert
 ###################
+
+# Unwrap/convert files from format to format
 afconvert -f WAVE -d LEI32 MyAudio.m4a -o MyAudio.wav
 
-# Unrap wav to .raw
--c is channels
--b is bits
--r is bitrate
+###################
+### sox
+###################
+
+# Unwrap .wav to .raw using
+# -c is channels
+# -b is bits
+# -r is bitrate
 sox -r 44100 -e unsigned -b 8 -c 1 <RAW_FILE> <TARGET_FILE>
+
+
+###################
+### ffmpeg
+###################
+# Convert audio file from one format to another
+
+# The following command keeps high quality on .mp3 (320 kbps), and metadata from
+# .flac file are converted to ID3v2 format, which can be included in .mp3 files:
+ffmpeg -i input.flac -ab 320k -map_metadata 0 -id3v2_version 3 output.mp3
+
+# Convert .wav to .flac
+ffmpeg -i input.wav -map_metadata 0 -id3v2_version 3 output.flac
+
+# Preserves metadata
+# (This maps both the global as well as stream metadata.)
+ffmpeg -n -i $INFILE -c:a libmp3lame -q:a 1 -ar 44100 -map_metadata 0 -map_metadata 0:s:0 -id3v2_version 3 -vn $OUTFILE.mp3
+
+# Convert video to audio
+ffmpeg -i input-video.avi -vn -acodec copy output-audio.aac/Users/patricks/Movies/Screen\ Recording\ 2023-07-24\ at\ 12.04.00\ PM.mov
 
 
 ---------------------------------------------------------------------------------
@@ -98,21 +99,33 @@ sox -r 44100 -e unsigned -b 8 -c 1 <RAW_FILE> <TARGET_FILE>
 ### Strip EXIF data (requires imagemagick)
 ###################
 
+# Strip EXIF data
 convert file.jpg -strip file.jpg
 
 
 ---------------------------------------------------------------------------------
-Convert video to audio
-ffmpeg -i input-video.avi -vn -acodec copy output-audio.aac/Users/patricks/Movies/Screen\ Recording\ 2023-07-24\ at\ 12.04.00\ PM.mov 
+###################
+### Convert .EPS file to .SHP file
+###################
+# Useful for converting Grapher lines or other vectors to .shp files for LFO curves
+ogr2ogr -f "ESRI Shapefile" output.shp input.eps
 
 
 ---------------------------------------------------------------------------------
-Convert .EPS file to .SHP file
+###################
+### bpm-tools
+###################
 
-ogr2ogr -f "ESRI Shapefile" output.shp input.eps
+# Incoming audio is raw audio on stdin at 44100Hz, mono, 32-bit float; eg.
+sox file.mp3 -t raw -r 44100 -e float -c 1 - | ./bpm
 
-Useful for converting Grapher lines or other vectors to .shp files for LFO
-curves
+# To view autodifference or energy data:
+#   sox [...] | bpm -g file.dat
+#   gnuplot
+#     gnuplot> plot "file.dat"
+
+# Example:
+sox -v 0.99 /Users/patrickschreiber/Music/Constable\ ref\ tracks/15637543_Sperm_\(Original\ Mix\).mp3 -t raw -r 44100 -e float -c 1 - | ./bpm -fv -m 20 -x 666 -g ~/Desktop/bpm-tools_Sperm-audiodiff.dat -e ~/Desktop/bpm-tools_Sperm-energydata.dat
 
 
 ---------------------------------------------------------------------------------
