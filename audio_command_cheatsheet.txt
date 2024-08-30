@@ -85,6 +85,8 @@ ffmpeg -i input.flac -ab 320k -map_metadata 0 -id3v2_version 3 output.mp3
 
 # Convert .wav to .flac
 ffmpeg -i input.wav -map_metadata 0 -id3v2_version 3 output.flac
+# Or anything to .mp3
+ffmpeg -i infile.mp4 -ab 320k -map_metadata 0 -id3v2_version 3 outfile.mp3
 
 # Preserves metadata
 # (This maps both the global as well as stream metadata.)
