@@ -131,3 +131,17 @@ sox -v 0.99 /Users/patrickschreiber/Music/Constable\ ref\ tracks/15637543_Sperm_
 
 
 ---------------------------------------------------------------------------------
+###################
+### Format a drive for CDJ-2000
+###################
+# HFS+ has advantages over FAT/FAT32 since the partition size can safely approach
+# 2TB without consequence, and the CDJ-2000 supports the format all the same.
+# Make sure journaling is enabled, so I guess JHFS+
+
+# No need for EFI since it's not a boot drive.
+diskutil partitionDisk -noEFI /dev/disk4 GPT jhfs+ VOLUME_NAME VOLUME_SIZE(use diskutil list)
+# Ex.
+diskutil partitionDisk -noEFI /dev/disk4 GPT jhfs+ AN_ELLIPSIS 15.5g
+
+# Then ensure it's journaled for better error recovery.
+diskutil enableJournal /dev/disk4s1 # make sure to grab the correct partition mount point
