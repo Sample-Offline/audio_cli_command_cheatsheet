@@ -95,6 +95,9 @@ ffmpeg -n -i $INFILE -c:a libmp3lame -q:a 1 -ar 44100 -map_metadata 0 -map_metad
 # Convert video to audio
 ffmpeg -i input-video.avi -vn -acodec copy output-audio.aac/Users/patricks/Movies/Screen\ Recording\ 2023-07-24\ at\ 12.04.00\ PM.mov
 
+# You can also batch convert with subdirs. Use the following (untested)
+find . -exec ffmpeg -i {} {}.mp3 \;
+
 
 ---------------------------------------------------------------------------------
 ###################
