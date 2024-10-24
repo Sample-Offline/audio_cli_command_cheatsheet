@@ -31,6 +31,20 @@ sox --i example.wav
 gzip -cd MySong.als > MySong.xml
 
 
+# This can be useful for when there's a missing reference that's not resolvable
+# in the Ableton file browser. 
+
+# Say for the Windows projects I transferred to my Mac. Serum VST2 is missing, 
+# and hot-swapping resets the device. 
+# HYPOTHESIS: Could I update the reference in the xml file, then convert it back
+# or even make the ghost directory with the VST loaded to shim it, then save
+# the project as a pack? (Obv. shimming won't work that well from Win->Mac. More
+# Mac->Mac or Win->Win thing). 
+open -a Visual\ Studio\ Code MySong.xml
+# Search for "Serum"
+# Path val may be something like:
+# <Path Value="C:/Users/<username>/Dropbox/music/vst/win/instruments/synthesizers/Serum/Serum_x64.dll" /> 
+
 ---------------------------------------------------------------------------------
 ###################
 ### Find
