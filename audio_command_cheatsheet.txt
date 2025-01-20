@@ -109,9 +109,10 @@ ffmpeg -n -i $INFILE -c:a libmp3lame -q:a 1 -ar 44100 -map_metadata 0 -map_metad
 # Convert video to audio
 ffmpeg -i input-video.avi -vn -acodec copy output-audio.aac/Users/patricks/Movies/Screen\ Recording\ 2023-07-24\ at\ 12.04.00\ PM.mov
 
-# You can also batch convert with subdirs. Use the following (untested)
+# You can also batch convert with subdirs. Use the following:
+# Edit: yeah it works
 find . -exec ffmpeg -i {} {}.mp3 \;
-
+find <DIR_TO_CONVERT>
 
 ---------------------------------------------------------------------------------
 ###################
@@ -146,6 +147,20 @@ sox file.mp3 -t raw -r 44100 -e float -c 1 - | ./bpm
 # Example:
 sox -v 0.99 /Users/patrickschreiber/Music/Constable\ ref\ tracks/15637543_Sperm_\(Original\ Mix\).mp3 -t raw -r 44100 -e float -c 1 - | ./bpm -fv -m 20 -x 666 -g ~/Desktop/bpm-tools_Sperm-audiodiff.dat -e ~/Desktop/bpm-tools_Sperm-energydata.dat
 
+
+# Get the sample rate of the file alone
+sox --i -r <filename>
+
+
+# Batch converting sample rate /bit depth using sox? anyone know how?
+# from: https://gearspace.com/board/electronic-music-instruments-and-electronic-music-production/868006-batch-converting-sample-rate-bit-depth-using-sox-anyone-know-how.html
+# 1. Install Homebrew and Sox (brew sox)
+# 2. Make sure sox is installed (just type sox and hit enter on the command line)
+# 3. Change to the directory containing the wav files (something like cd ~/Documents/WAVs)
+# 4. Make a directory called "converted" or whatever you want to call it in Finder or by running mkdir converted on the command line
+# 5.run the following:
+# (Untested)
+for file in *.wav; do sox $file -r 44100 -b 24 converted/$(basename $file) -V; done
 
 ---------------------------------------------------------------------------------
 ###################
